@@ -142,8 +142,20 @@ module.exports = function(grunt) {
 	function downloadIndividualRelease(options, releaseInfo, platform, callback)
 	{
 		var assetName = "atom-shell-" + options.atom_shell_version + "-" + platform + ".zip";
-		var assetUrl = _.find(releaseInfo.assets, {'name' : assetName }).url;
-		var assetSize = _.find(releaseInfo.assets, {'name' : assetName }).size;
+		var foundAsset = _.find(releaseInfo.assets, {'name' : assetName });
+		if (!foundAsset) {
+			grunt.log.writeln("Asset not found: " + assetName);
+			grunt.log.writeln("Available assets:");
+
+			releaseInfo.assets.forEach(function (asset) {
+				grunt.log.writeln("\t" + asset.name);
+			});
+
+			throw new Error("Failed to find asset: " + assetName);
+		}
+		
+		var assetUrl = foundAsset.url;
+		var assetSize = foundAsset.size;
 		var saveLocation = path.join(options.cache_dir,assetName);
 		
 		if (fs.existsSync(saveLocation))
