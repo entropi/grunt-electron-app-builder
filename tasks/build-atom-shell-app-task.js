@@ -229,47 +229,46 @@ module.exports = function(grunt) {
 		);
 	}
 
+	//
+	// Return if the requested platform contain 'platform' as a sub-string.
+	//
+	function isPlatformRequested(requestedPlatform, platform) {
+		return requestedPlatform.indexOf(platform) != -1;
+	}
+
 	function addAppSources(options, callback)
 	{
 		grunt.log.subhead("Adding app to releases.")
-		if (options.platforms.indexOf("darwin") != -1)
-		{
-			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "darwin", "atom-shell", "Atom.app", "Contents","Resources", "app"), {
-				forceDelete: true, 
-				excludeHiddenUnix: true,
-				preserveFiles: false,
-				preserveTimestamps: true,
-				inflateSymlinks: true
-			});
-			grunt.log.ok("OS X build located at " + path.join(options.build_dir, "darwin", "atom-shell"));
-		}
-		else if (options.platforms.indexOf("win32") != -1)
-		{
-			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "win32", "atom-shell", "resources", "app"), {
-				forceDelete: true, 
-				excludeHiddenUnix: true,
-				preserveFiles: false,
-				preserveTimestamps: true,
-				inflateSymlinks: true
-			});
-			grunt.log.ok("Windows build located at " + path.join(options.build_dir, "win32", "atom-shell"));
-		}
-		else if (options.platforms.indexOf("linux") != -1)
-		{
-			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "linux", "atom-shell", "resources", "app"), {
-				forceDelete: true, 
-				excludeHiddenUnix: true,
-				preserveFiles: false,
-				preserveTimestamps: true,
-				inflateSymlinks: true
-			});
-			grunt.log.ok("Linux build located at " + path.join(options.build_dir, "linux", "atom-shell"));
 
+		options.platforms.forEach(function (requestedPlatform) {
+
+			var buildOutputDir = path.join(options.build_dir, requestedPlatform, "atom-shell");
+			var appOutputDir;
+
+			if (isPlatformRequested(requestedPlatform, "darwin")) {
+				
+				appOutputDir = path.join(buildOutputDir, "Atom.app", "Contents","Resources", "app");
+			}
+			else if (isPlatformRequested(requestedPlatform, "win32") ||
+				     isPlatformRequested(requestedPlatform, "linux")) {
+
+				appOutputDir = path.join(buildOutputDir, "resources", "app");
 		}
-		else {
-			grunt.log.fail("Failed to copy app, platform not understood: " + options.platforms);
+			else {
+				
+				grunt.log.fail("Failed to copy app, platform not understood: " + requestedPlatform);
 		}
 
+			wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
+				forceDelete: true, 
+				excludeHiddenUnix: true,
+				preserveFiles: false,
+				preserveTimestamps: true,
+				inflateSymlinks: true
+			});
+
+			grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
+		});
 	}
 };
 
