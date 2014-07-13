@@ -31,15 +31,12 @@ module.exports = function(grunt) {
 				platforms: [process.platform]
       		});
 
-			var unsupported = false;
 			options.platforms.forEach(function(platform){
 				var supportedPlatforms = ['darwin','win32','linux'];
 				if (supportedPlatforms.indexOf(platform) == -1) {
-					grunt.log.error('Unsupported platform: [' + platform + ']');
-					unsupported = true;
+					grunt.log.warn('Unsupported platform: [' + platform + ']');
 				}
 			});
-			if (unsupported) done(false);
 
 			if ((process.platform == 'win32') && options.platforms.indexOf('darwin') != -1) {
 				grunt.log.warn("Due to symlinks in the atom-shell zip, darwin builds are not supported on Windows and will be skipped.");
