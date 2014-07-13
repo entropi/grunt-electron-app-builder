@@ -243,7 +243,7 @@ module.exports = function(grunt) {
 			});
 			grunt.log.ok("OS X build located at " + path.join(options.build_dir, "darwin", "atom-shell"));
 		}
-		if (options.platforms.indexOf("win32") != -1)
+		else if (options.platforms.indexOf("win32") != -1)
 		{
 			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "win32", "atom-shell", "resources", "app"), {
 				forceDelete: true, 
@@ -254,7 +254,7 @@ module.exports = function(grunt) {
 			});
 			grunt.log.ok("Windows build located at " + path.join(options.build_dir, "win32", "atom-shell"));
 		}
-		if (options.platforms.indexOf("linux") != -1)
+		else if (options.platforms.indexOf("linux") != -1)
 		{
 			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "linux", "atom-shell", "resources", "app"), {
 				forceDelete: true, 
@@ -265,6 +265,9 @@ module.exports = function(grunt) {
 			});
 			grunt.log.ok("Linux build located at " + path.join(options.build_dir, "linux", "atom-shell"));
 
+		}
+		else {
+			grunt.log.fail("Failed to copy app, platform not understood: " + options.platforms);
 		}
 
 	}
