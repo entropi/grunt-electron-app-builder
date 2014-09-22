@@ -31,15 +31,12 @@ module.exports = function(grunt) {
 				platforms: [process.platform]
       		});
 
-			var unsupported = false;
 			options.platforms.forEach(function(platform){
 				var supportedPlatforms = ['darwin','win32','linux'];
 				if (supportedPlatforms.indexOf(platform) == -1) {
-					grunt.log.error('Unsupported platform: [' + platform + ']');
-					unsupported = true;
+					grunt.log.warn('Unsupported platform: [' + platform + ']');
 				}
 			});
-			if (unsupported) done(false);
 
 			if ((process.platform == 'win32') && options.platforms.indexOf('darwin') != -1) {
 				grunt.log.warn("Due to symlinks in the atom-shell zip, darwin builds are not supported on Windows and will be skipped.");
@@ -142,8 +139,20 @@ module.exports = function(grunt) {
 	function downloadIndividualRelease(options, releaseInfo, platform, callback)
 	{
 		var assetName = "atom-shell-" + options.atom_shell_version + "-" + platform + ".zip";
-		var assetUrl = _.find(releaseInfo.assets, {'name' : assetName }).url;
-		var assetSize = _.find(releaseInfo.assets, {'name' : assetName }).size;
+		var foundAsset = _.find(releaseInfo.assets, {'name' : assetName });
+		if (!foundAsset) {
+			grunt.log.writeln("Asset not found: " + assetName);
+			grunt.log.writeln("Available assets:");
+
+			releaseInfo.assets.forEach(function (asset) {
+				grunt.log.writeln("\t" + asset.name);
+			});
+
+			throw new Error("Failed to find asset: " + assetName);
+		}
+		
+		var assetUrl = foundAsset.url;
+		var assetSize = foundAsset.size;
 		var saveLocation = path.join(options.cache_dir,assetName);
 		
 		if (fs.existsSync(saveLocation))
@@ -220,44 +229,46 @@ module.exports = function(grunt) {
 		);
 	}
 
+	//
+	// Return if the requested platform contain 'platform' as a sub-string.
+	//
+	function isPlatformRequested(requestedPlatform, platform) {
+		return requestedPlatform.indexOf(platform) != -1;
+	}
+
 	function addAppSources(options, callback)
 	{
 		grunt.log.subhead("Adding app to releases.")
-		if (options.platforms.indexOf("darwin") != -1)
-		{
-			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "darwin", "atom-shell", "Atom.app", "Contents","Resources", "app"), {
-				forceDelete: true, 
-				excludeHiddenUnix: true,
-				preserveFiles: false,
-				preserveTimestamps: true,
-				inflateSymlinks: true
-			});
-			grunt.log.ok("OS X build located at " + path.join(options.build_dir, "darwin", "atom-shell"));
-		}
-		if (options.platforms.indexOf("win32") != -1)
-		{
-			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "win32", "atom-shell", "resources", "app"), {
-				forceDelete: true, 
-				excludeHiddenUnix: true,
-				preserveFiles: false,
-				preserveTimestamps: true,
-				inflateSymlinks: true
-			});
-			grunt.log.ok("Windows build located at " + path.join(options.build_dir, "win32", "atom-shell"));
-		}
-		if (options.platforms.indexOf("linux") != -1)
-		{
-			wrench.copyDirSyncRecursive(options.app_dir, path.join(options.build_dir, "linux", "atom-shell", "resources", "app"), {
-				forceDelete: true, 
-				excludeHiddenUnix: true,
-				preserveFiles: false,
-				preserveTimestamps: true,
-				inflateSymlinks: true
-			});
-			grunt.log.ok("Linux build located at " + path.join(options.build_dir, "linux", "atom-shell"));
 
+		options.platforms.forEach(function (requestedPlatform) {
+
+			var buildOutputDir = path.join(options.build_dir, requestedPlatform, "atom-shell");
+			var appOutputDir;
+
+			if (isPlatformRequested(requestedPlatform, "darwin")) {
+				
+				appOutputDir = path.join(buildOutputDir, "Atom.app", "Contents","Resources", "app");
+			}
+			else if (isPlatformRequested(requestedPlatform, "win32") ||
+				     isPlatformRequested(requestedPlatform, "linux")) {
+
+				appOutputDir = path.join(buildOutputDir, "resources", "app");
+		}
+			else {
+				
+				grunt.log.fail("Failed to copy app, platform not understood: " + requestedPlatform);
 		}
 
+			wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
+				forceDelete: true, 
+				excludeHiddenUnix: true,
+				preserveFiles: false,
+				preserveTimestamps: true,
+				inflateSymlinks: true
+			});
+
+			grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
+		});
 	}
 };
 
