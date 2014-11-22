@@ -1,6 +1,6 @@
 {
   "name": "grunt-atom-shell-app-builder",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Creates atom-shell based applications",
   "repository": {
     "type": "git",
