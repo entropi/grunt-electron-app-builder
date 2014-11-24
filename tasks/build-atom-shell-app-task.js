@@ -32,11 +32,16 @@ module.exports = function(grunt) {
             });
 
             options.platforms.forEach(function(platform){
-                var supportedPlatforms = ['darwin','win32','linux'];
+                var supportedPlatforms = ['darwin','win32','linux','linux32','linux64'];
                 if (supportedPlatforms.indexOf(platform) == -1) {
                     grunt.log.warn('Unsupported platform: [' + platform + ']');
                 }
             });
+
+            if (options.platforms.indexOf('linux') >= 0 && options.platforms.indexOf('linux32') >= 0) {
+                grunt.log.warn("linux32 and linux are equivalent, but you're trying to build both. Removed 'linux' from the target platforms.")
+                options.platforms.splice(options.platforms.indexOf('linux'), 1);
+            }
 
             if ((process.platform == 'win32') && options.platforms.indexOf('darwin') != -1) {
                 grunt.log.warn("Due to symlinks in the atom-shell zip, darwin builds are not supported on Windows and will be skipped.");
@@ -62,9 +67,15 @@ module.exports = function(grunt) {
         {
             platform = 'darwin-x64';
         }
-        if (platform === 'win32' || platform === 'linux')
+        else if (platform === 'win32' || platform === 'linux')
         {
             platform = platform + '-ia32';
+        }
+        else if (platform === 'linux32') {
+            platform = 'linux-ia32';
+        }
+        else if (platform === 'linux64') {
+            platform = 'linux-x64';
         }
         return platform;
     }
