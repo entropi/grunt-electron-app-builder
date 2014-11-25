@@ -271,18 +271,16 @@ module.exports = function(grunt) {
             var appOutputDir;
 
             if (isPlatformRequested(requestedPlatform, "darwin")) {
-
                 appOutputDir = path.join(buildOutputDir, "Atom.app", "Contents","Resources", "app");
             }
             else if (isPlatformRequested(requestedPlatform, "win32") ||
                      isPlatformRequested(requestedPlatform, "linux")) {
 
                 appOutputDir = path.join(buildOutputDir, "resources", "app");
-        }
+            }
             else {
-
                 grunt.log.fail("Failed to copy app, platform not understood: " + requestedPlatform);
-        }
+            }
 
             wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
                 forceDelete: true,
@@ -294,5 +292,7 @@ module.exports = function(grunt) {
 
             grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
         });
+
+        callback();
     }
 };
