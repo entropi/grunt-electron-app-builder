@@ -75,7 +75,8 @@ Note that building `'darwin'` packages on a windows host is currently unsupporte
 
 ## Release History
 - 2014-05-21    initial release
-- 2015-11-22	updated to new atom-shell release architecture naming scheme
+- 2014-11-22	updated to new atom-shell release architecture naming scheme
+- 2014-11-24	added support for linux x64
 
 ## License
 Copyright (c) 2014 Chad Fawcett
