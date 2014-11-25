@@ -65,7 +65,7 @@ Type: `String Array`
 Default value: `[ 'HostPlatform' ]`
 Required: `no`
 
-The platforms to download and build packages for. Supported platforms are `'darwin'`, `'win32'`, and `'linux'`. If ommitted, defaults to the host platform. 
+The platforms to download and build packages for. Supported platforms are `'darwin'`, `'win32'`, `'linux32'`, and `'linux64'` (`'linux'` works as well for backwards compatibility, and maps to linux32). If ommitted, defaults to the host platform. 
 
 Note that building `'darwin'` packages on a windows host is currently unsupported due to the format of the darwin atom-shell zip, which includes symlinks.
 
