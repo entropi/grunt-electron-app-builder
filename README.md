@@ -3,7 +3,7 @@
 Helps build atom-shell baed applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
 
 ## Getting Started
-Install this grunt plugin with: `npm install grunt-atom-shell-app-builder`
+Install this grunt plugin with: `npm install grunt-atom-shell-app-builder --save-dev`
 
 Then add this line to your project's gruntfile:
 
