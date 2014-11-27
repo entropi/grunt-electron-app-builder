@@ -151,9 +151,7 @@ module.exports = function(grunt) {
     function downloadReleases(options, releaseInfo, callback)
     {
         grunt.log.subhead("Downloading releases...")
-        options.platforms.forEach(function(platform) {
-            wrench.mkdirSyncRecursive(options.cache_dir);
-        });
+        wrench.mkdirSyncRecursive(options.cache_dir);
         async.eachSeries(options.platforms,
             function(platform, localcallback) {
                 downloadIndividualRelease(options, releaseInfo, platform, localcallback);
