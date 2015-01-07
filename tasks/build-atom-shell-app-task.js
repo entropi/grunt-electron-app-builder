@@ -28,6 +28,7 @@ module.exports = function(grunt) {
                 build_dir: "build",
                 cache_dir: "cache",
                 app_dir: "app",
+                force_cached_version:false,
                 platforms: [process.platform]
             });
 
@@ -183,7 +184,7 @@ module.exports = function(grunt) {
         if (fs.existsSync(saveLocation))
         {
             var stats = fs.statSync(saveLocation);
-            if (stats.isFile() && (stats.size == assetSize))
+            if (options.force_cached_version || (stats.isFile() && (stats.size == assetSize)))
             {
                 grunt.log.ok(" Found cached download of " + assetName);
                 callback();
