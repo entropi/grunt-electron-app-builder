@@ -53,6 +53,15 @@ Required: `no`
 
 Where downloads of the pre-built binaries should be stored.
 
+#### options.force_cached_version
+Type: `boolean`
+Default value: `false`
+Required: `no`
+
+If `force_cached_version` is set to `true` then the task will use use the version in the `cache` directory that matches the correct file name (i.e. `atom-shell-v0.20.4-win32-ia32.zip`) even if the zip file is a different size than what has been officially released. This will allow you to make custom changes to the build of atom-shell (such as changing the icon of the `exe` or editing the `Info.plist` in `Atom.app`). If this is set to `false` (which is the default) then anything in the cache directory must match the correct file name and file size. It is recommended that this be used in conjunction with `options.atom_shell_version`.
+
+
+
 #### options.app_dir
 Type: `String`
 Default value: `app`
