@@ -53,12 +53,12 @@ Required: `no`
 
 Where downloads of the pre-built binaries should be stored.
 
-#### options.app_dir
-Type: `String`
-Default value: `app`
+#### options.src
+Type: `String Array`
+Default value: `app/**/*`
 Required: `no`
 
-Where application source is located. This will be copied to the app directory for each platform build.
+Where application source is located using [simple-glob](https://github.com/jedmao/simple-glob). This will be copied to the app directory for each platform build.
 
 #### options.platforms
 Type: `String Array`

@@ -8,13 +8,14 @@
  */
 
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 var request = require('request');
 var async = require('async');
 var wrench = require('wrench');
 var decompressZip = require('decompress-zip');
 var progress = require('progress');
 var _ = require('lodash');
+var glob = require('simple-glob');
 
 module.exports = function(grunt) {
 
@@ -27,7 +28,7 @@ module.exports = function(grunt) {
                 atom_shell_version: null,
                 build_dir: "build",
                 cache_dir: "cache",
-                app_dir: "app",
+                src: 'app/**/*',
                 platforms: [process.platform]
             });
 
@@ -261,12 +262,72 @@ module.exports = function(grunt) {
         return requestedPlatform.indexOf(platform) != -1;
     }
 
+    // Taken from https://github.com/mllrsohn/node-webkit-builder
+    function copyFile(src, dest, callback) {
+        var stats = fs.lstatSync(src);
+        fs.copy(src, dest, function (err) {
+            if(err) {
+              return callback(err);
+            }
+
+            var retryCount = 0;
+            var existsCallback = function(exists) {
+                if(exists){
+                    fs.chmod(dest, stats.mode, function(err) {
+                        if (err) {
+                            grunt.log.warn('chmod ' + stats.mode + ' on ' + dest + ' failed after copying');
+                        }
+                        callback();
+                    });
+                } else if (retryCount++ < 2) {
+                    setTimeout(function(){
+                        fs.exists(dest, existsCallback);
+                    }, 1000);
+                } else {
+                    callback(new Error("Copied file (" + dest + ") doesn't exist in destination after copying"));
+                }
+            };
+
+            fs.exists(dest, existsCallback);
+        });
+    }
+
+    //
+    // Returns an array of relative file paths matched by the glob pattern(s).
+    //
+    function getFiles(fileGlob) {
+        var matches = glob(fileGlob);
+
+        if(!matches.length) {
+            throw new Error('No matching files');
+        }
+
+        return matches.filter(function (filename) {
+            return !fs.lstatSync(filename).isDirectory();
+        }).map(function (filename) {
+            return path.normalize(filename);
+        });
+    }
+
+    function copyFiles(files, outputDir, callback) {
+        var pending = files.length;
+        files.forEach(function (file) {
+            copyFile(file, path.resolve(outputDir, file), function (error) {
+                if (error) {
+                    return callback(error);
+                }
+                if (!--pending) {
+                    callback();
+                }
+            });
+        });
+    }
+
     function addAppSources(options, callback)
     {
-        grunt.log.subhead("Adding app to releases.")
+        grunt.log.subhead("Adding app to releases.");
 
-        options.platforms.forEach(function (requestedPlatform) {
-
+        async.eachSeries(options.platforms, function (requestedPlatform, callback) {
             var buildOutputDir = path.join(options.build_dir, requestedPlatform, "atom-shell");
             var appOutputDir;
 
@@ -274,25 +335,27 @@ module.exports = function(grunt) {
                 appOutputDir = path.join(buildOutputDir, "Atom.app", "Contents","Resources", "app");
             }
             else if (isPlatformRequested(requestedPlatform, "win32") ||
-                     isPlatformRequested(requestedPlatform, "linux")) {
-
+                isPlatformRequested(requestedPlatform, "linux")) {
                 appOutputDir = path.join(buildOutputDir, "resources", "app");
             }
             else {
-                grunt.log.fail("Failed to copy app, platform not understood: " + requestedPlatform);
+                return callback(new Error("Failed to copy app, platform not understood: " + requestedPlatform));
             }
 
-            wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
-                forceDelete: true,
-                excludeHiddenUnix: true,
-                preserveFiles: false,
-                preserveTimestamps: true,
-                inflateSymlinks: true
-            });
+            copyFiles(getFiles(options.src), appOutputDir, function (error) {
+                if (error) {
+                    return callback(error);
+                }
+                grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
+                callback();
+            })
 
-            grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
+        }, function (error) {
+            if (error) {
+                grunt.log.warn('Failed to copy all the files', error);
+                return callback(error);
+            }
+            callback();
         });
-
-        callback();
     }
-};
+  };
