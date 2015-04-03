@@ -24,7 +24,7 @@ module.exports = function(grunt) {
         function() {
             var plat
             if(process.platform == 'linux') {
-                plat = 'linux' + process.arch.replace('x', '');
+                plat = 'linux' + process.arch.replace('x', '').replace('ia', '');
             } else {
                 plat = process.platform;
             }
