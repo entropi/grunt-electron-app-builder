@@ -22,13 +22,19 @@ module.exports = function(grunt) {
         'build-atom-shell-app',
         'Package the app as an atom-shell application',
         function() {
+            var plat
+            if(process.platform == 'linux') {
+                plat = 'linux' + process.arch.replace('x', '');
+            } else {
+                plat = process.platform;
+            }
             var done = this.async();
             var options = this.options({
                 atom_shell_version: null,
                 build_dir: "build",
                 cache_dir: "cache",
                 app_dir: "app",
-                platforms: [process.platform]
+                platforms: [plat]
             });
 
             options.platforms.forEach(function(platform){
