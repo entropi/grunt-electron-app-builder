@@ -61,11 +61,25 @@ module.exports = function(grunt) {
                 verifyTagAndGetReleaseInfo,
                 downloadReleases,
                 extractReleases,
-                addAppSources
+                addAppSources,
+                function(callback) {
+                    setLinuxPermissions(options, callback);
+                },
             ], function(err) { if (err) throw err; done(); }
+
         );
     });
 
+
+    function setLinuxPermissions(options, callback) {
+        async.eachSeries(options.platforms, function(platform, localcallback) {
+          if (['linux', 'linux32', 'linux64'].indexOf(platform) != -1 && process.platform == 'linux') {
+              fs.chmodSync(path.join(options.build_dir, platform, "atom-shell", "atom"), 0755)
+          }
+          localcallback(null)
+        });
+        callback();
+    }
 
     function addArchitectureToPlatform(platform)
     {
@@ -256,6 +270,7 @@ module.exports = function(grunt) {
                         path: destPath
                     });
                 }
+
             }, function(err) { callback(err,options); }
         );
     }
