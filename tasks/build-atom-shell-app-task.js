@@ -31,6 +31,7 @@ module.exports = function(grunt) {
             var done = this.async();
             var options = this.options({
                 atom_shell_version: null,
+                force_cached_version: false,
                 build_dir: "build",
                 cache_dir: "cache",
                 app_dir: "app",
@@ -185,7 +186,8 @@ module.exports = function(grunt) {
     {
         var assetName = "atom-shell-" + options.atom_shell_version + "-" + addArchitectureToPlatform(platform) + ".zip";
         var foundAsset = _.find(releaseInfo.assets, {'name' : assetName });
-        if (!foundAsset) {
+
+        if (!foundAsset && !options.force_cached_version) {
             grunt.log.writeln("Asset not found: " + assetName);
             grunt.log.writeln("Available assets:");
 
@@ -203,7 +205,7 @@ module.exports = function(grunt) {
         if (fs.existsSync(saveLocation))
         {
             var stats = fs.statSync(saveLocation);
-            if (stats.isFile() && (stats.size == assetSize))
+            if (options.force_cached_version || stats.isFile() && (stats.size == assetSize))
             {
                 grunt.log.ok(" Found cached download of " + assetName);
                 callback();
