@@ -131,6 +131,9 @@ module.exports = function(grunt) {
 
     function verifyTagAndGetReleaseInfo(options, responseBody, callback)
     {
+        var cachedReleaseInfoFile = path.join(options.cache_dir, 'package-info-'+options.atom_shell_version+'.json');
+        var cachedReleaseInfo;
+        
         if (responseBody)
         {
             var releaseInfo = _.find(responseBody, {'tag_name' : options.atom_shell_version });
@@ -142,29 +145,42 @@ module.exports = function(grunt) {
         }
         else
         {
-            request({
-                    url: 'https://api.github.com/repos/atom/atom-shell/releases',
-                    json: true,
-                    headers: {
-                        'User-Agent': "grunt-atom-shell-app-builder"
+            try {
+                cachedReleaseInfo = grunt.file.readJSON(cachedReleaseInfoFile);
+                grunt.log.writeln("Cached release info found...");
+            } catch(e) {
+                // could not find release info
+            }
+          
+            if (cachedReleaseInfo) {
+                callback(null, options, cachedReleaseInfo);
+            } else {
+                request({
+                        url: 'https://api.github.com/repos/atom/atom-shell/releases',
+                        json: true,
+                        headers: {
+                            'User-Agent': "grunt-atom-shell-app-builder"
+                        }
                     }
-                }
-                , function(error, response, body) {
-                    if (error)
-                        callback(error);
-                    if (response.statusCode == 403)
-                        callback(new Error("github API unexpected response in verifyTag() with HTTP response code of " + response.statusCode + '. Probably hit the throttle limit.'));
-                    if (response.statusCode != 200)
-                        callback(new Error("github API unexpected response in verifyTag() with HTTP response code of " + response.statusCode));
+                    , function(error, response, body) {
+                        if (error)
+                            callback(error);
+                        if (response.statusCode == 403)
+                            callback(new Error("github API unexpected response in verifyTag() with HTTP response code of " + response.statusCode + '. Probably hit the throttle limit.'));
+                        if (response.statusCode != 200)
+                            callback(new Error("github API unexpected response in verifyTag() with HTTP response code of " + response.statusCode));
 
-                    var releaseInfo = _.find(body, {'tag_name' : options.atom_shell_version });
-                    if (!releaseInfo)
-                    {
-                        callback(new Error("Could not find a release with tag " + options.atom_shell_version));
+                        var releaseInfo = _.find(body, {'tag_name' : options.atom_shell_version });
+                        if (!releaseInfo)
+                        {
+                            callback(new Error("Could not find a release with tag " + options.atom_shell_version));
+                        }
+                    
+                        grunt.file.write(cachedReleaseInfoFile, JSON.stringify(releaseInfo));
+                        callback(null, options, releaseInfo);
                     }
-                    callback(null, options, releaseInfo);
-                }
-            );
+                );
+            } 
         }
     }
 
@@ -185,6 +201,7 @@ module.exports = function(grunt) {
     {
         var assetName = "atom-shell-" + options.atom_shell_version + "-" + addArchitectureToPlatform(platform) + ".zip";
         var foundAsset = _.find(releaseInfo.assets, {'name' : assetName });
+
         if (!foundAsset) {
             grunt.log.writeln("Asset not found: " + assetName);
             grunt.log.writeln("Available assets:");
