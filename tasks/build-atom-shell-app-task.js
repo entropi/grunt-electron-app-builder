@@ -107,7 +107,7 @@ module.exports = function(grunt) {
         else
         {
             request({
-                    url: 'https://api.github.com/repos/atom/atom-shell/releases',
+                    url: 'https://api.github.com/repos/atom/electron/releases',
                     json: true,
                     headers: {
                         'User-Agent': "grunt-atom-shell-app-builder"
@@ -156,7 +156,7 @@ module.exports = function(grunt) {
                 callback(null, options, cachedReleaseInfo);
             } else {
                 request({
-                        url: 'https://api.github.com/repos/atom/atom-shell/releases',
+                        url: 'https://api.github.com/repos/atom/electron/releases',
                         json: true,
                         headers: {
                             'User-Agent': "grunt-atom-shell-app-builder"
