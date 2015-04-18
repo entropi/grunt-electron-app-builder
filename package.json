@@ -1,10 +1,10 @@
 {
-  "name": "grunt-atom-shell-app-builder",
-  "version": "0.0.7",
-  "description": "Creates atom-shell based applications",
+  "name": "grunt-electron-app-builder",
+  "version": "0.1.0",
+  "description": "Creates electron (formerly atom-shell) based applications",
   "repository": {
     "type": "git",
-    "url": "git://github.com/entropi/grunt-atom-shell-app-builder.git"
+    "url": "git://github.com/speak/grunt-electron-app-builder.git"
   },
   "author": {
     "name": "Chad Fawcett",
@@ -13,9 +13,9 @@
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/entropi/grunt-atom-shell-app-builder/issues"
+    "url": "https://github.com/speak/grunt-electron-app-builder/issues"
   },
-  "homepage": "https://github.com/entropi/grunt-atom-shell-app-builder",
+  "homepage": "https://github.com/speak/grunt-electron-app-builder",
   "devDependencies": {
     "grunt": "^0.4.5"
   },
