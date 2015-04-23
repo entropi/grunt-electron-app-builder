@@ -321,7 +321,7 @@ module.exports = function(grunt) {
             var appOutputDir;
 
             if (isPlatformRequested(requestedPlatform, "darwin")) {
-                appOutputDir = path.join(buildOutputDir, "Atom.app", "Contents","Resources", "app");
+                appOutputDir = path.join(buildOutputDir, "Electron.app", "Contents","Resources", "app");
             }
             else if (isPlatformRequested(requestedPlatform, "win32") ||
                      isPlatformRequested(requestedPlatform, "linux")) {
