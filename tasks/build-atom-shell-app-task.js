@@ -74,7 +74,19 @@ module.exports = function(grunt) {
     function setLinuxPermissions(options, callback) {
         async.eachSeries(options.platforms, function(platform, localcallback) {
           if (['linux', 'linux32', 'linux64'].indexOf(platform) != -1 && process.platform == 'linux') {
-              fs.chmodSync(path.join(options.build_dir, platform, "electron", "atom"), 0755)
+              var p = path.join(options.build_dir, platform, "electron", "resources", "app")
+              grunt.log.success(p)
+              if(fs.existsSync(p)) {
+                grunt.log.success("app dir exists")
+                fs.chmodSync(p, 0755)
+              }
+
+              if(fs.existsSync(p+".asar")) {
+                grunt.log.success("app archive exists")
+                fs.chmodSync(p+".asar", 0755)
+              }
+
+              fs.chmodSync(path.join(options.build_dir, platform, "electron", "electron"), 0757)
           }
           localcallback(null)
         });
@@ -320,13 +332,23 @@ module.exports = function(grunt) {
                 grunt.log.fail("Failed to copy app, platform not understood: " + requestedPlatform);
             }
 
-            wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
-                forceDelete: true,
-                excludeHiddenUnix: true,
-                preserveFiles: false,
-                preserveTimestamps: true,
-                inflateSymlinks: true
-            });
+            var appDirStats = fs.lstatSync(options.app_dir);
+
+            if(appDirStats.isDirectory()) {
+              grunt.log.ok("App is a directory")
+              wrench.copyDirSyncRecursive(options.app_dir, appOutputDir, {
+                  forceDelete: true,
+                  excludeHiddenUnix: true,
+                  preserveFiles: false,
+                  preserveTimestamps: true,
+                  inflateSymlinks: true
+              });
+            } else if (appDirStats.isFile() && options.app_dir.indexOf('.asar') !== -1) {
+              grunt.log.ok("App is a file")
+              fs.createReadStream(options.app_dir).pipe(fs.createWriteStream(appOutputDir+'.asar'));
+            } else {
+              grunt.log.error('Shared directory must be either a directory or an ASAR archive.')
+            }
 
             grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
         });
