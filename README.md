@@ -1,14 +1,14 @@
-# grunt-atom-shell-app-builder
+# grunt-electron-app-builder
 
-Helps build atom-shell baed applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
+Helps build electron baed applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
 
 ## Getting Started
-Install this grunt plugin with: `npm install grunt-atom-shell-app-builder`
+Install this grunt plugin with: `npm install grunt-electron-app-builder`
 
 Then add this line to your project's gruntfile:
 
 ```javascript
-grunt.loadNpmTasks('grunt-atom-shell-app-builder');
+grunt.loadNpmTasks('grunt-electron-app-builder');
 ```
 
 ### Example
@@ -16,27 +16,27 @@ grunt.loadNpmTasks('grunt-atom-shell-app-builder');
 ```javascript
 module.exports = function(grunt) {
   grunt.initConfig({
-    'build-atom-shell-app': {
+    'build-electron-app': {
         options: {
             platforms: ["darwin", "win32"]
         }
     }
   });
-  grunt.loadNpmTasks('grunt-atom-shell-app-builder');
+  grunt.loadNpmTasks('grunt-electron-app-builder');
 };
 
 ```
 
-## The "build-atom-shell-app" task
+## The "build-electron-app" task
 
 ### Options
 
-#### options.atom_shell_version
+#### options.electron_version
 Type: `String`
 Default value: `most recent release`
 Required: `no`
 
-The version of atom-shell you want to use (e.g., `'v0.12.5'`). [Here is a list](https://github.com/atom/atom-shell/releases) of available releases. If not specified, it will query github for the latest release.
+The version of electron you want to use (e.g., `'v0.24.0'`). [Here is a list](https://github.com/atom/electron/releases) of available releases. If not specified, it will query github for the latest release.
 
 #### options.build_dir
 Type: `String`
@@ -67,16 +67,12 @@ Required: `no`
 
 The platforms to download and build packages for. Supported platforms are `'darwin'`, `'win32'`, `'linux32'`, and `'linux64'` (`'linux'` works as well for backwards compatibility, and maps to linux32). If ommitted, defaults to the host platform. 
 
-Note that building `'darwin'` packages on a windows host is currently unsupported due to the format of the darwin atom-shell zip, which includes symlinks.
+Note that building `'darwin'` packages on a windows host is currently unsupported due to the format of the darwin electron zip, which includes symlinks.
 
 
 ## To Do:
 - Add support for further application customization (name, icon, etc)
 
-## Release History
-- 2014-05-21    initial release
-- 2014-11-22	updated to new atom-shell release architecture naming scheme
-- 2014-11-24	added support for linux x64
 
 ## License
 Copyright (c) 2014 Chad Fawcett
