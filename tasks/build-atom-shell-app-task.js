@@ -122,7 +122,8 @@ module.exports = function(grunt) {
                     url: 'https://api.github.com/repos/atom/electron/releases',
                     json: true,
                     headers: {
-                        'User-Agent': "grunt-electron-app-builder"
+                        'User-Agent': "grunt-electron-app-builder",
+                        'Authorization': options.Authorization ? options.Authorization : ''
                     }
                 }
                 , function(error, response, body) {
@@ -171,7 +172,8 @@ module.exports = function(grunt) {
                         url: 'https://api.github.com/repos/atom/electron/releases',
                         json: true,
                         headers: {
-                            'User-Agent': "grunt-electron-app-builder"
+                            'User-Agent': "grunt-electron-app-builder",
+                            'Authorization': options.Authorization ? options.Authorization : ''
                         }
                     }
                     , function(error, response, body) {
@@ -243,7 +245,8 @@ module.exports = function(grunt) {
                 url: assetUrl,
                 headers: {
                     'User-Agent': "grunt-electron-app-builder",
-                    "Accept" : "application/octet-stream"
+                    "Accept" : "application/octet-stream",
+                    'Authorization': options.Authorization ? options.Authorization : ''
                 }
             }).on('end', function() {
                     callback();
