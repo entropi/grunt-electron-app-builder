@@ -8,7 +8,7 @@
  */
 
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 var request = require('request');
 var async = require('async');
 var wrench = require('wrench');
@@ -346,7 +346,7 @@ module.exports = function(grunt) {
               });
             } else if (appDirStats.isFile() && options.app_dir.indexOf('.asar') !== -1) {
               grunt.log.ok("App is a file")
-              fs.createReadStream(options.app_dir).pipe(fs.createWriteStream(appOutputDir+'.asar'));
+              fs.copySync(options.app_dir, appOutputDir+'.asar');
             } else {
               grunt.log.error('Shared directory must be either a directory or an ASAR archive.')
             }
