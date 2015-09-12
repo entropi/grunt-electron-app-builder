@@ -75,15 +75,20 @@ module.exports = function(grunt) {
         async.eachSeries(options.platforms, function(platform, localcallback) {
           if (['linux', 'linux32', 'linux64'].indexOf(platform) != -1 && process.platform == 'linux') {
               var p = path.join(options.build_dir, platform, "electron", "resources", "app")
-              grunt.log.success(p)
+            
               if(fs.existsSync(p)) {
-                grunt.log.success("app dir exists")
-                fs.chmodSync(p, 0755)
+                grunt.log.success("app dir exists");
+                fs.chmodSync(p, 0755);
               }
 
               if(fs.existsSync(p+".asar")) {
-                grunt.log.success("app archive exists")
-                fs.chmodSync(p+".asar", 0755)
+                grunt.log.success("app archive exists");
+                fs.chmodSync(p+".asar", 0755);
+              }
+              
+              if(fs.existsSync(p+".asar.unpacked")) {
+                grunt.log.success("app unpacked dir exists");
+                fs.chmodSync(p, 0755);
               }
 
               fs.chmodSync(path.join(options.build_dir, platform, "electron", "electron"), 0757)
@@ -344,8 +349,12 @@ module.exports = function(grunt) {
                   inflateSymlinks: true
               });
             } else if (appDirStats.isFile() && options.app_dir.indexOf('.asar') !== -1) {
-              grunt.log.ok("App is a file")
+              grunt.log.ok("App is packed as .asar")
               fs.copySync(options.app_dir, appOutputDir+'.asar');
+              
+              if (fs.existsSync(options.app_dir + ".unpacked")) {
+                fs.copySync(options.app_dir + ".unpacked", appOutputDir+'.asar.unpacked');
+              }
             } else {
               grunt.log.error('Shared directory must be either a directory or an ASAR archive.')
             }
