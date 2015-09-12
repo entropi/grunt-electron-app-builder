@@ -63,9 +63,7 @@ module.exports = function(grunt) {
                 extractReleases,
                 removeDefaultApp,
                 addAppSources,
-                function(callback) {
-                    setLinuxPermissions(options, callback);
-                },
+                setLinuxPermissions,
             ], function(err) { if (err) throw err; done(); }
 
         );
@@ -332,7 +330,7 @@ module.exports = function(grunt) {
           if (fs.existsSync(defaultApp)) {
             fs.remove(defaultApp, function (err) {
               if (err) return grunt.log.fail(err);
-              callback();
+              callback(err, options);
             });
           }
         });
@@ -384,6 +382,6 @@ module.exports = function(grunt) {
             grunt.log.ok("Build for platform " + requestedPlatform + " located at " + buildOutputDir);
         });
 
-        callback();
+        callback(null, options);
     }
 };
