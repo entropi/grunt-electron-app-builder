@@ -61,6 +61,7 @@ module.exports = function(grunt) {
                 verifyTagAndGetReleaseInfo,
                 downloadReleases,
                 extractReleases,
+                removeDefaultApp,
                 addAppSources,
                 function(callback) {
                     setLinuxPermissions(options, callback);
@@ -314,6 +315,27 @@ module.exports = function(grunt) {
     //
     function isPlatformRequested(requestedPlatform, platform) {
         return requestedPlatform.indexOf(platform) != -1;
+    }
+    
+    function removeDefaultApp(options, callback)
+    {
+        grunt.log.subhead("Removing default_app.")
+      
+        options.platforms.forEach(function (requestedPlatform) {
+          var buildOutputDir = path.join(options.build_dir, requestedPlatform, "electron");
+          var defaultApp = path.join(buildOutputDir, "resources", "default_app");
+
+          if (isPlatformRequested(requestedPlatform, "darwin")) {
+              defaultApp = path.join(buildOutputDir, "Electron.app", "Contents","Resources", "default_app");
+          }
+
+          if (fs.existsSync(defaultApp)) {
+            fs.remove(defaultApp, function (err) {
+              if (err) return grunt.log.fail(err);
+              callback();
+            });
+          }
+        });
     }
 
     function addAppSources(options, callback)
