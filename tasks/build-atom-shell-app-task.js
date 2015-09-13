@@ -332,6 +332,8 @@ module.exports = function(grunt) {
               if (err) return grunt.log.fail(err);
               callback(err, options);
             });
+          } else {
+            callback(null, options);
           }
         });
     }
