@@ -87,7 +87,7 @@ module.exports = function(grunt) {
               
               if(fs.existsSync(p+".asar.unpacked")) {
                 grunt.log.success("app unpacked dir exists");
-                fs.chmodSync(p, 0755);
+                fs.chmodSync(p+".asar.unpacked", 0755);
               }
 
               fs.chmodSync(path.join(options.build_dir, platform, "electron", "electron"), 0757)
