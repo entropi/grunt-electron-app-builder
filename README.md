@@ -1,6 +1,6 @@
 # grunt-electron-app-builder
 
-Helps build electron baed applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
+Helps build electron based applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
 
 ## Getting Started
 Install this grunt plugin with: `npm install grunt-electron-app-builder`
