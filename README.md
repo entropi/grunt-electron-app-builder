@@ -1,6 +1,6 @@
 # grunt-electron-app-builder
 
-Helps build electron baed applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distirbution.
+Helps build electron based applications for mac, win and linux with grunt. It will download the prebuilt binaries for either the latest or a specific version, unpack them, and add your application source to the extracted distribution.
 
 ## Getting Started
 Install this grunt plugin with: `npm install grunt-electron-app-builder`
@@ -36,7 +36,7 @@ Type: `String`
 Default value: `most recent release`
 Required: `no`
 
-The version of electron you want to use (e.g., `'v0.24.0'`). [Here is a list](https://github.com/atom/electron/releases) of available releases. If not specified, it will query github for the latest release.
+The version of electron you want to use (e.g., `'v0.32.0'`). [Here is a list](https://github.com/atom/electron/releases) of available releases. If not specified, it will query github for the latest release.
 
 #### options.build_dir
 Type: `String`
@@ -65,7 +65,7 @@ Type: `String Array`
 Default value: `[ 'HostPlatform' ]`
 Required: `no`
 
-The platforms to download and build packages for. Supported platforms are `'darwin'`, `'win32'`, `'linux32'`, and `'linux64'` (`'linux'` works as well for backwards compatibility, and maps to linux32). If ommitted, defaults to the host platform. 
+The platforms to download and build packages for. Supported platforms are `'darwin'`, `'win32'`, `'linux32'`, and `'linux64'` (`'linux'` works as well for backwards compatibility, and maps to linux32). If omitted, defaults to the host platform. 
 
 Note that building `'darwin'` packages on a windows host is currently unsupported due to the format of the darwin electron zip, which includes symlinks.
 
